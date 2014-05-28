@@ -1,0 +1,2 @@
+probes_dir: test/probes
+db_dir: test/db/test.sqlite3

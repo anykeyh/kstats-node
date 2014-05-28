@@ -1,0 +1,84 @@
+#!/usr/bin/env ruby
+lib = File.expand_path('../../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
+
+class Time
+  def to_db
+    strftime "%Y%m%d%H%M%S"
+  end
+end
+
+require 'optparse'
+require 'yaml'
+require 'kstats/node'
+require 'json'
+
+options = {}
+optparse = OptionParser.new do |opts|
+  opts.banner = "Usage: kstats-node [options]"
+
+  opts.on('-h', '--help', 'Show help screen'){ puts opts; exit }
+
+  opts.on('-c', '--config CONF', 'Set configuration file') do |config|
+    options[:config] = config
+  end
+end
+
+optparse.parse!
+require 'sinatra'
+
+#Parse the configuration file:
+config = YAML::load(File.read(options[:config]))
+Kstats::Node::CONFIG.merge!(config)
+
+Kstats::Node::Database.init
+
+get '/probes/list' do
+  Kstats::Node::Probe.list.to_json
+end
+
+#Display data for daily infos
+get '/probe/:id/:target' do
+  now = Time.now
+
+  case params[:target]
+  when 'tick'
+    start = now - (60*60*24)
+  when 'weekly'
+    start = now - 7*(60*60*24)
+  when 'monthly'
+    start = now - 30*(60*60*24)
+  when 'yearly'
+    start = now - 365*(60*60*24)
+  else
+    return 403
+  end
+
+
+  data =Kstats::Node::Database.db.execute(
+    "SELECT probe_key, date, probe_value FROM probe_data WHERE period_type=? AND probe_id = ? AND date >= ? ORDER BY date ASC",
+    params[:target],
+    params[:id],
+    start.to_s
+  )
+
+  datas = {}
+  data.each do |record|
+    key, date, value = record
+    datas[key] ||= []
+    datas[key] << [Time.parse(date), value]
+  end
+
+  datas.each do |key, value|
+    datas[key] =   Kstats::Node::Helper.generate_array(value, start, (now-start)/60, 288)
+  end
+
+  {
+    start_at: start,
+    format: Kstats::Node::Probe.get_format(params[:id]),
+    data: datas
+  }.to_json
+end
+
+Kstats::Node::Worker.launch!
