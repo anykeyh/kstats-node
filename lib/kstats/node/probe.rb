@@ -30,7 +30,7 @@ module Kstats
           @fixed_registered = @registered
           @registered = []
 
-          dir = Kstats::Node::CONFIG['probes_dir']
+          dir = Kstats::Node::Config['probes_dir']
 
           Dir[File.join(dir, "*.rb")].each do |probe_file|
             begin

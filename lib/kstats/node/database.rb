@@ -7,7 +7,7 @@ module Kstats
         attr_reader :db
 
         def init
-          @db = SQLite3::Database.new( Kstats::Node::CONFIG['db_dir'] )
+          @db = SQLite3::Database.new( Kstats::Node::Config['db_dir'] )
           @db.execute [
             "CREATE TABLE IF NOT EXISTS probe_data (id INTEGER PRIMARY KEY ASC, date DATETIME, period_type STRING, probe_id STRING, probe_key STRING, probe_value NUMBER)",
             "CREATE INDEX IF NOT EXISTS probe_data_period_type ON probe_data(period_type)",
@@ -26,7 +26,7 @@ module Kstats
 
           probes.each do |name, values|
             @db.close
-            @db = SQLite3::Database.new( Kstats::Node::CONFIG['db_dir'] )
+            @db = SQLite3::Database.new( Kstats::Node::Config['db_dir'] )
 
             sql = <<SQL
 INSERT INTO probe_data (date, period_type, probe_id, probe_key, probe_value)

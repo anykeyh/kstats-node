@@ -2,13 +2,6 @@
 lib = File.expand_path('../../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
-
-class Time
-  def to_db
-    strftime "%Y%m%d%H%M%S"
-  end
-end
-
 require 'optparse'
 require 'yaml'
 require 'kstats/node'
@@ -20,18 +13,31 @@ optparse = OptionParser.new do |opts|
 
   opts.on('-h', '--help', 'Show help screen'){ puts opts; exit }
 
-  opts.on('-c', '--config CONF', 'Set configuration file') do |config|
+  opts.on('-c', '--config CONF', 'Set configuration file (required)') do |config|
     options[:config] = config
   end
 end
 
 optparse.parse!
-require 'sinatra'
 
 #Parse the configuration file:
-config = YAML::load(File.read(options[:config]))
-Kstats::Node::CONFIG.merge!(config)
+if options[:config].nil?
+  puts optparse
+  exit
+end
 
+require 'sinatra'
+
+puts "KStats::Node"
+
+puts "Load configuration file"
+config = YAML::load(File.read(options[:config]))
+Kstats::Node::Config.init(config)
+
+set :port, Kstats::Node::Config['server.port', 4567].to_i
+set :bind, Kstats::Node::Config['server.bind', '0.0.0.0']
+
+puts "Initialize database"
 Kstats::Node::Database.init
 
 get '/probes/list' do
@@ -82,3 +88,5 @@ get '/probe/:id/:target' do
 end
 
 Kstats::Node::Worker.launch!
+
+puts "Service is launched"

@@ -9,7 +9,7 @@ module Kstats
         thread = Thread.new do
           begin
             begin
-              puts "New probe tick."
+              puts "***GATHERING INFORMATIONS #{`date`}."
               probes = Kstats::Node::Probe.reload_and_test!
 
               if insert_month == 0
