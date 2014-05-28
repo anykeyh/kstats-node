@@ -16,6 +16,37 @@ optparse = OptionParser.new do |opts|
   opts.on('-c', '--config CONF', 'Set configuration file (required)') do |config|
     options[:config] = config
   end
+
+  opts.on('-i', '--install', 'Build into current directory all startup files.') do
+    pwd = `pwd`.gsub("\n", "")
+
+    puts "Create #{pwd}/conf..."
+    `mkdir conf`
+
+    puts "Create #{pwd}/probes..."
+    `mkdir probes`
+
+    puts "Create #{pwd}/conf/conf.yml..."
+    File.open('conf/conf.yml', 'w') do |f|
+      content = <<CONF
+probes_dir: #{pwd}/probes
+db_dir: #{pwd}/db.sqlite3
+server:
+  port: 1234
+  bind: 0.0.0.0
+CONF
+      f.write content
+    end
+
+    Dir[File.expand_path('../../lib/kstats/probes/*', __FILE__)].each do |probefile|
+      puts "cp #{probefile} #{pwd}/probes/"
+      `cp #{probefile} #{pwd}/probes/`
+    end
+
+    puts "Done"
+
+    exit
+  end
 end
 
 optparse.parse!
