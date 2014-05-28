@@ -1,0 +1,5 @@
+probes_dir: /home/yacine/Workspaces/kstats/kstats-node/test/probes
+db_dir: /home/yacine/Workspaces/kstats/kstats-node/test/db.sqlite3
+server:
+  port: 1234
+  bind: 0.0.0.0
