@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Yacine Petitprez"]
   spec.email         = ["yacine@kosmogo.com"]
   spec.summary       = %q{Node for the project kstats}
-  spec.description   = %q{Provide a simple way to make probe on system values, and monitorign theses values.}
+  spec.description   = %q{Provide a simple way to make probe on system values, and monitoring theses values.}
   spec.homepage      = ""
   spec.license       = "MIT"
   spec.executables << 'kstats-node'
