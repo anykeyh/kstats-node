@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.description   = %q{Provide a simple way to make probe on system values, and monitoring theses values.}
   spec.homepage      = ""
   spec.license       = "MIT"
-  spec.executables << 'kstats-node'
+  spec.executables += %w(kstats-node kstats-node-service)
 
   spec.files         = `git ls-files -z`.split("\x0")
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
