@@ -17,13 +17,13 @@ do
         c)
                 CONFIG="$OPTARG";;
         [?])
-                echo >&2 "Usage: $0 [start|stop|restart|force-reload] -p pidfile -l logfile -c configfile"
+                echo >&2 "Usage: kstats-node-service [start|stop|restart|force-reload] -p pidfile -l logfile -c configfile"
                 exit 1;;
         esac
 done
 
 if [[ -z "$LOGFILE" || -z "PIDFILE" || -z "$CONFIG" ]]; then
-        echo >&2 "Usage: $0 [start|stop|restart|force-reload] -p pidfile -l logfile -c configfile"
+        echo >&2 "Usage: kstats-node-service [start|stop|restart|force-reload] -p pidfile -l logfile -c configfile"
         exit 1
 fi
 
@@ -61,7 +61,7 @@ case "$COMMAND" in
                 echo "kstats-node restarted."
                 ;;
         *)
-                echo >&2 "Usage: $0 [start|stop|restart|force-reload] -p pidfile -l logfile -c configfile"
+                echo >&2 "Usage: kstats-node-service [start|stop|restart|force-reload] -p pidfile -l logfile -c configfile"
                 exit 1
                 ;;
 esac
